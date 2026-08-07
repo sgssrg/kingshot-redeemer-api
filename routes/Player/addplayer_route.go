@@ -24,8 +24,9 @@ import (
 // @Tags Player
 // @Accept json
 // @Produce json
-// @Param player body PlayerReqBody true "Player to add"
-// @Success 201 {object} model.PlayerAPIResponse
+// @Param player body model.PlayerReqBody true "Player to add"
+// @Success 201 {object} model.PlayerAPIResponse "Created Player without Player Fetch" example({"message": "Created Player without API","type": 2,"player": {"pid": 123,"kid": 789, "alliance": "XYZ"})
+// @Success 201 {object} model.PlayerAPIResponse "Created Player using Player Fetch" example({"message": "Created Player","type": 1,"player": {"pid": 201927560,"kid": 1420, "dName": "name-of-the-profile", "pfp": "url-of-pfp", "alliance": "XYZ"}})
 // @Failure 400 {object} map[string]interface{} "Invalid JSON or validation error"
 // @Failure 500 {object} map[string]interface{} "Unable to add the player"
 // @Router /player/add [post]
@@ -38,7 +39,7 @@ func AddPlayer(c *echo.Context) error {
 	ctx := context.Background()
 
 	// pid from params
-	body := new(PlayerReqBody)
+	body := new(model.PlayerReqBody)
 	// Step 2: Bind JSON body into struct
 	if err := c.Bind(body); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -122,7 +123,13 @@ func AddPlayer(c *echo.Context) error {
 			c.Response().Header().Set("Cache-Control", "no-store")
 			return c.JSON(500, map[string]string{"message": "Unable to add the player"})
 		}
-		return c.JSON(http.StatusCreated, model.PlayerResponse{Message: "Created Player", Type: 1, Player: p})
+		return c.JSON(http.StatusCreated, model.PlayerResponse{Message: "Created Player", Type: 1, Player: model.PlayerInfo{
+			Pid:      p.Pid,
+			Dname:    p.Dname.String,
+			Kid:      p.Kid,
+			Alliance: p.Alliance.String,
+			Pfp:      p.Pfp.String,
+		}})
 	}
 
 	if err != nil {
@@ -142,5 +149,11 @@ func AddPlayer(c *echo.Context) error {
 		return c.JSON(500, map[string]string{"message": "Unable to add the player"})
 	}
 
-	return c.JSON(http.StatusCreated, model.PlayerResponse{Message: "Created Player without API", Type: 2, Player: p})
+	return c.JSON(http.StatusCreated, model.PlayerResponse{Message: "Created Player without API", Type: 2, Player: model.PlayerInfo{
+		Pid:      p.Pid,
+		Dname:    p.Dname.String,
+		Kid:      p.Kid,
+		Alliance: p.Alliance.String,
+		Pfp:      p.Pfp.String,
+	}})
 }

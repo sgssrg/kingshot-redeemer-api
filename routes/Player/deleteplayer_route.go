@@ -10,6 +10,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"gitlab.com/ribonin/apis/kingshot-redeem/db"
+	"gitlab.com/ribonin/apis/kingshot-redeem/model"
 )
 
 // DeletePlayer removes a player by PiD.
@@ -18,8 +19,8 @@ import (
 // @Tags Player
 // @Produce json
 // @Param pid path int true "Player ID"
-// @Success 202 {object} idealResponse
-// @Failure 500 {object} map[string]interface{} "Delete failed"
+// @Success 202 {object} model.DeletePlayerResponse "Player deleted" example({"pid":123,"deleted":true})
+// @Failure 500 {object} model.DeletePlayerErrorResponse "Delete failed" example({"pid":123,"deleted":false,"error":"database error"})
 // @Router /player/del/{pid} [delete]
 func DeletePlayer(c *echo.Context) error {
 	pid := c.Param("pid")
@@ -32,18 +33,14 @@ func DeletePlayer(c *echo.Context) error {
 	pidInt, _ := strconv.Atoi(pid)
 
 	err := dbApp.Queries.DeletePlayer(ctx, int32(pidInt))
+
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"id":      pid,
-			"deleted": false,
-			"error":   err.Error(),
+		return c.JSON(http.StatusInternalServerError, model.DeletePlayerErrorResponse{
+			Pid:     pid,
+			Deleted: false,
+			Error:   err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusAccepted, idealResponse{Pid: pid, Deleted: true})
-}
-
-type idealResponse struct {
-	Pid     string `json:"pid"`
-	Deleted bool   `json:"deleted"`
+	return c.JSON(http.StatusAccepted, model.DeletePlayerResponse{Pid: pid, Deleted: true})
 }

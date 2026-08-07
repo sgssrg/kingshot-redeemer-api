@@ -30,7 +30,9 @@ const (
 // @Description Loads all players from the database and redeems the configured gift code for each one, streaming per-player results as Server-Sent Events (event: redeem-res) followed by a summary (event: redeem-fin). Rate limited.
 // @Tags Redeem
 // @Produce text/event-stream
-// @Success 200 {string} string "SSE stream of redeem-res and redeem-fin events"
+// @Param code query string false "Gift code" example(KS0803)
+// @Success 200 {string} string "redeem-res event" example(event: redeem-res\ndata: {"fid":"123","code":"KS0803","result":{"errCode":20000,"msg":"Redeemed"},"success":true,"time":"2026-08-07T22:05:40+05:30"})
+// @Success 200 {string} string "redeem-fin event" example(event: redeem-fin\ndata: {"redeemed":10,"manual":2,"playerDead":1,"codeExpired":3})
 // @Router /redeem/db [post]
 func RedeemWithDB(c *echo.Context) error {
 	reqContext := c.Request().Context()

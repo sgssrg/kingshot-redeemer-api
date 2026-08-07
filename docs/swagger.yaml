@@ -1,5 +1,21 @@
 basePath: /
 definitions:
+  model.DeletePlayerErrorResponse:
+    properties:
+      deleted:
+        type: boolean
+      error:
+        type: string
+      pid:
+        type: string
+    type: object
+  model.DeletePlayerResponse:
+    properties:
+      deleted:
+        type: boolean
+      pid:
+        type: string
+    type: object
   model.PlayerAPIResponse:
     properties:
       message:
@@ -13,7 +29,7 @@ definitions:
     properties:
       alliance:
         type: string
-      dname:
+      dName:
         type: string
       kid:
         type: integer
@@ -22,7 +38,7 @@ definitions:
       pid:
         type: integer
     type: object
-  player.PlayerReqBody:
+  model.PlayerReqBody:
     properties:
       alliance:
         type: string
@@ -34,13 +50,6 @@ definitions:
     required:
     - kid
     - pid
-    type: object
-  player.idealResponse:
-    properties:
-      deleted:
-        type: boolean
-      pid:
-        type: string
     type: object
 host: localhost:8081
 info:
@@ -76,12 +85,14 @@ paths:
         name: player
         required: true
         schema:
-          $ref: '#/definitions/player.PlayerReqBody'
+          $ref: '#/definitions/model.PlayerReqBody'
       produces:
       - application/json
       responses:
         "201":
-          description: Created
+          description: 'Created Player using Player Fetch" example({"message": "Created
+            Player","type": 1,"player": {"pid": 201927560,"kid": 1420, "dName": "name-of-the-profile",
+            "pfp": "url-of-pfp", "alliance": "XYZ"}})'
           schema:
             $ref: '#/definitions/model.PlayerAPIResponse'
         "400":
@@ -110,14 +121,14 @@ paths:
       - application/json
       responses:
         "202":
-          description: Accepted
+          description: Player deleted" example({"pid":123,"deleted":true})
           schema:
-            $ref: '#/definitions/player.idealResponse'
+            $ref: '#/definitions/model.DeletePlayerResponse'
         "500":
-          description: Delete failed
+          description: Delete failed" example({"pid":123,"deleted":false,"error":"database
+            error"})
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/model.DeletePlayerErrorResponse'
       summary: Delete a player
       tags:
       - Player
@@ -126,11 +137,17 @@ paths:
       description: 'Loads all players from the database and redeems the configured
         gift code for each one, streaming per-player results as Server-Sent Events
         (event: redeem-res) followed by a summary (event: redeem-fin). Rate limited.'
+      parameters:
+      - description: Gift code
+        example: KS0803
+        in: query
+        name: code
+        type: string
       produces:
       - text/event-stream
       responses:
         "200":
-          description: SSE stream of redeem-res and redeem-fin events
+          description: 'redeem-fin event" example(event: redeem-fin\ndata: {"redeemed":10,"manual":2,"playerDead":1,"codeExpired":3})'
           schema:
             type: string
       summary: Redeem gift code for all players
