@@ -1,0 +1,148 @@
+basePath: /
+definitions:
+  model.PlayerAPIResponse:
+    properties:
+      message:
+        type: string
+      player:
+        $ref: '#/definitions/model.PlayerInfo'
+      type:
+        type: integer
+    type: object
+  model.PlayerInfo:
+    properties:
+      alliance:
+        type: string
+      dname:
+        type: string
+      kid:
+        type: integer
+      pfp:
+        type: string
+      pid:
+        type: integer
+    type: object
+  player.PlayerReqBody:
+    properties:
+      alliance:
+        type: string
+      kid:
+        minimum: 1
+        type: integer
+      pid:
+        type: string
+    required:
+    - kid
+    - pid
+    type: object
+  player.idealResponse:
+    properties:
+      deleted:
+        type: boolean
+      pid:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: API for redeeming KingShot gift codes on behalf of registered players.
+    OpenAPI spec served at /api/openapi.json for import into GitBook.
+  title: Kingshot Redeem API
+  version: "1.0"
+paths:
+  /:
+    get:
+      description: Returns "Hello, World!" to confirm the service is running.
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Hello, World!
+          schema:
+            type: string
+      summary: Health check
+      tags:
+      - System
+  /player/add:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new player to the database. When KSFetchAvailable is enabled,
+        profile data is fetched from the KingShot API; otherwise only the provided
+        fields are stored.
+      parameters:
+      - description: Player to add
+        in: body
+        name: player
+        required: true
+        schema:
+          $ref: '#/definitions/player.PlayerReqBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.PlayerAPIResponse'
+        "400":
+          description: Invalid JSON or validation error
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Unable to add the player
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add a player
+      tags:
+      - Player
+  /player/del/{pid}:
+    delete:
+      description: Removes a player from the database by player ID.
+      parameters:
+      - description: Player ID
+        in: path
+        name: pid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/player.idealResponse'
+        "500":
+          description: Delete failed
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a player
+      tags:
+      - Player
+  /redeem/db:
+    post:
+      description: 'Loads all players from the database and redeems the configured
+        gift code for each one, streaming per-player results as Server-Sent Events
+        (event: redeem-res) followed by a summary (event: redeem-fin). Rate limited.'
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: SSE stream of redeem-res and redeem-fin events
+          schema:
+            type: string
+      summary: Redeem gift code for all players
+      tags:
+      - Redeem
+  /redeem/ws:
+    get:
+      description: Upgrades the connection to a WebSocket and greets the client.
+      responses:
+        "101":
+          description: Switching Protocols
+      summary: WebSocket test
+      tags:
+      - Redeem
+swagger: "2.0"

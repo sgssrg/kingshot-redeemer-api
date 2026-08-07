@@ -1,0 +1,217 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for redeeming KingShot gift codes on behalf of registered players. OpenAPI spec served at /api/openapi.json for import into GitBook.",
+        "title": "Kingshot Redeem API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8081",
+    "basePath": "/",
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Returns \"Hello, World!\" to confirm the service is running.",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "Hello, World!",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/player/add": {
+            "post": {
+                "description": "Adds a new player to the database. When KSFetchAvailable is enabled, profile data is fetched from the KingShot API; otherwise only the provided fields are stored.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Add a player",
+                "parameters": [
+                    {
+                        "description": "Player to add",
+                        "name": "player",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/player.PlayerReqBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.PlayerAPIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON or validation error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Unable to add the player",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/player/del/{pid}": {
+            "delete": {
+                "description": "Removes a player from the database by player ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Delete a player",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Player ID",
+                        "name": "pid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/player.idealResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Delete failed",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/redeem/db": {
+            "post": {
+                "description": "Loads all players from the database and redeems the configured gift code for each one, streaming per-player results as Server-Sent Events (event: redeem-res) followed by a summary (event: redeem-fin). Rate limited.",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Redeem"
+                ],
+                "summary": "Redeem gift code for all players",
+                "responses": {
+                    "200": {
+                        "description": "SSE stream of redeem-res and redeem-fin events",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/redeem/ws": {
+            "get": {
+                "description": "Upgrades the connection to a WebSocket and greets the client.",
+                "tags": [
+                    "Redeem"
+                ],
+                "summary": "WebSocket test",
+                "responses": {
+                    "101": {
+                        "description": "Switching Protocols"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.PlayerAPIResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "player": {
+                    "$ref": "#/definitions/model.PlayerInfo"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.PlayerInfo": {
+            "type": "object",
+            "properties": {
+                "alliance": {
+                    "type": "string"
+                },
+                "dname": {
+                    "type": "string"
+                },
+                "kid": {
+                    "type": "integer"
+                },
+                "pfp": {
+                    "type": "string"
+                },
+                "pid": {
+                    "type": "integer"
+                }
+            }
+        },
+        "player.PlayerReqBody": {
+            "type": "object",
+            "required": [
+                "kid",
+                "pid"
+            ],
+            "properties": {
+                "alliance": {
+                    "type": "string"
+                },
+                "kid": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "pid": {
+                    "type": "string"
+                }
+            }
+        },
+        "player.idealResponse": {
+            "type": "object",
+            "properties": {
+                "deleted": {
+                    "type": "boolean"
+                },
+                "pid": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
