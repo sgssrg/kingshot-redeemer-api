@@ -61,7 +61,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created Player using Player Fetch\" example({\"message\": \"Created Player\",\"type\": 1,\"player\": {\"pid\": 201927560,\"kid\": 1420, \"dName\": \"name-of-the-profile\", \"pfp\": \"url-of-pfp\", \"alliance\": \"XYZ\"}})",
+                        "description": "Created Player examples\" examples(",
                         "schema": {
                             "$ref": "#/definitions/model.PlayerAPIResponse"
                         }

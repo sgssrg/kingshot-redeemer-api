@@ -25,8 +25,12 @@ import (
 // @Accept json
 // @Produce json
 // @Param player body model.PlayerReqBody true "Player to add"
-// @Success 201 {object} model.PlayerAPIResponse "Created Player without Player Fetch" example({"message": "Created Player without API","type": 2,"player": {"pid": 123,"kid": 789, "alliance": "XYZ"})
-// @Success 201 {object} model.PlayerAPIResponse "Created Player using Player Fetch" example({"message": "Created Player","type": 1,"player": {"pid": 201927560,"kid": 1420, "dName": "name-of-the-profile", "pfp": "url-of-pfp", "alliance": "XYZ"}})
+// @Success 201 {object} model.PlayerAPIResponse "Created Player examples" examples(
+//
+//	{"Created Player without Player Fetch": {"message":"Created Player without API","type":2,"player":{"pid":123,"kid":789,"alliance":"XYZ"}}},
+//	{"Created Player using Player Fetch": {"message":"Created Player","type":1,"player":{"pid":201927560,"kid":1420,"dName":"name-of-the-profile","pfp":"url-of-pfp","alliance":"XYZ"}}}
+//
+// )
 // @Failure 400 {object} map[string]interface{} "Invalid JSON or validation error"
 // @Failure 500 {object} map[string]interface{} "Unable to add the player"
 // @Router /player/add [post]
