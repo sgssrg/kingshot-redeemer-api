@@ -133,7 +133,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "redeem-fin event\" example(event: redeem-fin\\ndata: {\"redeemed\":10,\"manual\":2,\"playerDead\":1,\"codeExpired\":3})",
+                        "description": "redeem-res and redeem-fin event\" example(event: redeem-res\\ndata: {\"fid\":\"123\",\"code\":\"KS0803\",\"result\":{\"errCode\":20000,\"msg\":\"Redeemed\"},\"success\":true,\"time\":\"2026-08-07T22:05:40+05:30\"}\\n\\n event: redeem-fin\\ndata: {\"redeemed\":10,\"manual\":2,\"playerDead\":1,\"codeExpired\":3})",
                         "schema": {
                             "type": "string"
                         }
