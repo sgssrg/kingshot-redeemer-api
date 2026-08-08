@@ -31,8 +31,7 @@ const (
 // @Tags Redeem
 // @Produce text/event-stream
 // @Param code query string false "Gift code" example(KS0803)
-// @Success 200 {string} string "redeem-res event" example(event: redeem-res\ndata: {"fid":"123","code":"KS0803","result":{"errCode":20000,"msg":"Redeemed"},"success":true,"time":"2026-08-07T22:05:40+05:30"})
-// @Success 200 {string} string "redeem-fin event" example(event: redeem-fin\ndata: {"redeemed":10,"manual":2,"playerDead":1,"codeExpired":3})
+// @Success 200 {string} string "redeem-res and redeem-fin event" example(event: redeem-res\ndata: {"fid":"123","code":"KS0803","result":{"errCode":20000,"msg":"Redeemed"},"success":true,"time":"2026-08-07T22:05:40+05:30"}\n\n event: redeem-fin\ndata: {"redeemed":10,"manual":2,"playerDead":1,"codeExpired":3})
 // @Router /redeem/db [post]
 func RedeemWithDB(c *echo.Context) error {
 	reqContext := c.Request().Context()
@@ -53,7 +52,7 @@ func RedeemWithDB(c *echo.Context) error {
 
 	giftCode := c.QueryParam("code")
 	if giftCode == "" {
-		giftCode = "KS0803"
+		return c.JSON(http.StatusBadGateway, map[string]string{"validation_error": "code query not found"})
 	}
 	dbApp := db.InitDB()
 	fmt.Println(os.Getenv("DB_URI"))

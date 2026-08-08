@@ -24,6 +24,7 @@ import (
 	online_route "gitlab.com/ribonin/apis/kingshot-redeem/routes"
 	player "gitlab.com/ribonin/apis/kingshot-redeem/routes/Player"
 	redeem "gitlab.com/ribonin/apis/kingshot-redeem/routes/Redeem"
+	scraper "gitlab.com/ribonin/apis/kingshot-redeem/routes/Scraper"
 )
 
 func RateLimitMiddleware(limit rate.Limit, burst int) echo.MiddlewareFunc {
@@ -98,10 +99,14 @@ func main() {
 	redeemRouter.POST("/db", redeem.RedeemWithDB, RateLimitMiddleware(0.75, 5))
 	redeemRouter.GET("/ws", redeem.WSTest)
 
+	scraperRouter := e.Group("/scraper")
+	scraperRouter.GET("/player/:fid", scraper.StratForgePlayerScraperAPI)
+
 	// OpenAPI spec (generated via `swag init`) for GitBook import
 	e.GET("/api/openapi.json", func(c *echo.Context) error {
 		return c.File("docs/swagger.json")
 	})
+
 	// Start server
 	if err := e.Start(":8081"); err != nil {
 		slog.Error("failed to start server", "error", err)
