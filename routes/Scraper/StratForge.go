@@ -38,6 +38,6 @@ func StratForgePlayerScraperAPI(c *echo.Context) error {
 	if errInfo != nil {
 		return c.JSON(http.StatusConflict, errInfo)
 	}
-
+	slog.Info("Player ", "Fetched", pInfo)
 	return c.JSON(http.StatusAccepted, pInfo)
 }

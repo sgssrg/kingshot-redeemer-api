@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -55,7 +54,6 @@ func RedeemWithDB(c *echo.Context) error {
 		return c.JSON(http.StatusBadGateway, map[string]string{"validation_error": "code query not found"})
 	}
 	dbApp := db.InitDB()
-	fmt.Println(os.Getenv("DB_URI"))
 	defer dbApp.Pool.Close()
 
 	ctx := context.Background()
@@ -66,7 +64,22 @@ func RedeemWithDB(c *echo.Context) error {
 	chunks := chunkArray(players, 5)
 	var playerMetaRedeemResponse model.PlayerMetaRedeemResponse
 	var finalRes []model.RedeemSSE
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-reqContext.Done():
+				return
+			case <-ticker.C:
+				fmt.Fprintf(res, ": keep-alive\n\n")
+				flusher.Flush()
+			}
+		}
+	}()
+
 	for _, batch := range chunks {
+
 		for _, p := range batch {
 			// Check if the client disconnected before doing work
 			select {
@@ -121,14 +134,10 @@ func RedeemWithDB(c *echo.Context) error {
 			// 4. Immediately flush buffer to the client
 			flusher.Flush()
 			// sleep(1)
+			sleep(1)
 		}
 		// Delay between batches
-		for i := 0; i < 4; i++ {
-			sleep(5)
-			// Send an SSE comment to keep the TCP pipe active
-			fmt.Fprintf(res, ": keep-alive\n\n")
-			flusher.Flush()
-		}
+		sleep(2)
 		// sleep(1)
 	}
 	metaJsonData, err := json.Marshal(playerMetaRedeemResponse)

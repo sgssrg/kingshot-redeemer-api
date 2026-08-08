@@ -61,3 +61,12 @@ type App struct {
 	Queries *db.Queries
 	Pool    *pgxpool.Pool
 }
+
+type UpdatePlayerSSE struct {
+	Updated bool      `json:"updated"`
+	Player  db.Player `json:"player"`
+}
+
+type UpdateMetaSSE struct {
+	Count int `json:"count"`
+}

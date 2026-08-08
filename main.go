@@ -94,6 +94,7 @@ func main() {
 	playerRouter := e.Group("/player")
 	playerRouter.POST("/add", player.AddPlayer)
 	playerRouter.DELETE("/del/:pid", player.DeletePlayer)
+	playerRouter.PATCH("/update", player.UpdateAllPlayer)
 
 	redeemRouter := e.Group("/redeem")
 	redeemRouter.POST("/db", redeem.RedeemWithDB, RateLimitMiddleware(0.75, 5))

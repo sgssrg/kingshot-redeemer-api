@@ -2,10 +2,8 @@ package player
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -37,7 +35,6 @@ import (
 func AddPlayer(c *echo.Context) error {
 	KSFetchAvailable := global.KSFetchAvailable
 	dbApp := db.InitDB()
-	fmt.Println(os.Getenv("DB_URI"))
 	defer dbApp.Pool.Close()
 
 	ctx := context.Background()

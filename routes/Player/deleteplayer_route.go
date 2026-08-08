@@ -2,10 +2,8 @@ package player
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/labstack/echo/v5"
@@ -25,7 +23,6 @@ import (
 func DeletePlayer(c *echo.Context) error {
 	pid := c.Param("pid")
 	dbApp := db.InitDB()
-	fmt.Println(os.Getenv("DB_URI"))
 	defer dbApp.Pool.Close()
 
 	slog.Info(pid)
