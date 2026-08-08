@@ -1,5 +1,14 @@
 basePath: /
 definitions:
+  model.CustomScrapePlayerErrInfo:
+    properties:
+      message:
+        type: string
+      pid:
+        type: integer
+      type:
+        type: integer
+    type: object
   model.DeletePlayerErrorResponse:
     properties:
       deleted:
@@ -50,6 +59,19 @@ definitions:
     required:
     - kid
     - pid
+    type: object
+  model.ScrapePlayerInfo:
+    properties:
+      alliance:
+        type: string
+      dName:
+        type: string
+      kid:
+        type: integer
+      pfp:
+        type: string
+      pid:
+        type: integer
     type: object
 host: localhost:8081
 info:
@@ -130,6 +152,24 @@ paths:
       summary: Delete a player
       tags:
       - Player
+  /player/update:
+    patch:
+      description: 'Loads all players from the database and update every single of
+        them, streaming per-player results as Server-Sent Events (event: update-res)
+        followed by a summary (event: update-fin) about the rows it replaced with
+        recent information. Rate limited.'
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: 'update-res and update-fin event" example(event: update-res\ndata:
+            {"updated":true,"player":{"pid":123,"kid":789,"dNname":"updated-player-name","pfp":"<updated-player-pfp-url>,"alliance":"DES"}}\n\n
+            event: update-fin\ndata: {"count":123 })'
+          schema:
+            type: string
+      summary: Updates the Db with latest Player
+      tags:
+      - Player
   /redeem/db:
     post:
       description: 'Loads all players from the database and redeems the configured
@@ -162,4 +202,41 @@ paths:
       summary: WebSocket test
       tags:
       - Redeem
+  /scraper/stratforge/{fid}:
+    get:
+      consumes:
+      - application/json
+      description: Fetches player profile data from stratforge.tools by player FID
+        (Fleet ID). Returns player display name, kingdom ID, alliance, and profile
+        picture.
+      parameters:
+      - description: Player Fleet ID
+        in: path
+        name: fid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/model.ScrapePlayerInfo'
+        "409":
+          description: Player ID doesn't exist
+          schema:
+            $ref: '#/definitions/model.CustomScrapePlayerErrInfo'
+        "500":
+          description: Scraping failed or invalid Player ID
+          schema:
+            $ref: '#/definitions/model.CustomScrapePlayerErrInfo'
+        "502":
+          description: Failed to fetch from stratforge.tools
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Scrape player profile from StratForge
+      tags:
+      - Scraper
 swagger: "2.0"

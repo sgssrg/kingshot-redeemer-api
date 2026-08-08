@@ -11,14 +11,18 @@ import (
 	"gitlab.com/ribonin/apis/kingshot-redeem/routes/Scraper/lib"
 )
 
-// @Summary Finds a Player using PlayerID
-// @Description Scrapes data from stratforge.tools for Player Details (robots.txt dated 08-10-2026)
-// @Tags Scraper
-// @Param player path int true "Player ID to Fetch"
-// @Produce json
-// @Success 202 {object} model.ScrapePlayerInfo "Created Player examples" example({"pid":123,"kid":123,"dName":"<player-name>","pfp":"player-pfp-link","alliance":"<player-alliance-tag>"})
-// @Failure 409 {object} model.CustomScrapePlayerErrInfo{} "Conflict error" example({"pid":123,"type":0,"message":"What caused the error"})
-// @Failure 500 {object} model.CustomScrapePlayerErrInfo{} example({"pid":123,"type":1,"message":"Player unable to be scraped / PlayerID is wrong"})
+// StratForgePlayerScraperAPI godoc
+// @Summary      Scrape player profile from StratForge
+// @Description  Fetches player profile data from stratforge.tools by player FID (Fleet ID). Returns player display name, kingdom ID, alliance, and profile picture.
+// @Tags         Scraper
+// @Accept       json
+// @Produce      json
+// @Param        fid   path      string  true  "Player Fleet ID"
+// @Success      202   {object}  model.ScrapePlayerInfo
+// @Failure      409   {object}  model.CustomScrapePlayerErrInfo "Player ID doesn't exist"
+// @Failure      500   {object}  model.CustomScrapePlayerErrInfo "Scraping failed or invalid Player ID"
+// @Failure      502   {object}  map[string]string "Failed to fetch from stratforge.tools"
+// @Router       /scraper/stratforge/{fid} [get]
 
 func StratForgePlayerScraperAPI(c *echo.Context) error {
 	fid := c.Param("fid")

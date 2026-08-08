@@ -112,6 +112,26 @@
                 }
             }
         },
+        "/player/update": {
+            "patch": {
+                "description": "Loads all players from the database and update every single of them, streaming per-player results as Server-Sent Events (event: update-res) followed by a summary (event: update-fin) about the rows it replaced with recent information. Rate limited.",
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Player"
+                ],
+                "summary": "Updates the Db with latest Player",
+                "responses": {
+                    "200": {
+                        "description": "update-res and update-fin event\" example(event: update-res\\ndata: {\"updated\":true,\"player\":{\"pid\":123,\"kid\":789,\"dNname\":\"updated-player-name\",\"pfp\":\"\u003cupdated-player-pfp-url\u003e,\"alliance\":\"DES\"}}\\n\\n event: update-fin\\ndata: {\"count\":123 })",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/redeem/db": {
             "post": {
                 "description": "Loads all players from the database and redeems the configured gift code for each one, streaming per-player results as Server-Sent Events (event: redeem-res) followed by a summary (event: redeem-fin). Rate limited.",
@@ -154,9 +174,76 @@
                     }
                 }
             }
+        },
+        "/scraper/stratforge/{fid}": {
+            "get": {
+                "description": "Fetches player profile data from stratforge.tools by player FID (Fleet ID). Returns player display name, kingdom ID, alliance, and profile picture.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Scraper"
+                ],
+                "summary": "Scrape player profile from StratForge",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Player Fleet ID",
+                        "name": "fid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "$ref": "#/definitions/model.ScrapePlayerInfo"
+                        }
+                    },
+                    "409": {
+                        "description": "Player ID doesn't exist",
+                        "schema": {
+                            "$ref": "#/definitions/model.CustomScrapePlayerErrInfo"
+                        }
+                    },
+                    "500": {
+                        "description": "Scraping failed or invalid Player ID",
+                        "schema": {
+                            "$ref": "#/definitions/model.CustomScrapePlayerErrInfo"
+                        }
+                    },
+                    "502": {
+                        "description": "Failed to fetch from stratforge.tools",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "model.CustomScrapePlayerErrInfo": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "pid": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.DeletePlayerErrorResponse": {
             "type": "object",
             "properties": {
@@ -232,6 +319,26 @@
                 },
                 "pid": {
                     "type": "string"
+                }
+            }
+        },
+        "model.ScrapePlayerInfo": {
+            "type": "object",
+            "properties": {
+                "alliance": {
+                    "type": "string"
+                },
+                "dName": {
+                    "type": "string"
+                },
+                "kid": {
+                    "type": "integer"
+                },
+                "pfp": {
+                    "type": "string"
+                },
+                "pid": {
+                    "type": "integer"
                 }
             }
         }
