@@ -32,35 +32,34 @@ const (
 // @Param code query string false "Gift code" example(KS0803)
 // @Success 200 {string} string "redeem-res and redeem-fin event" example(event: redeem-res\ndata: {"fid":"123","code":"KS0803","result":{"errCode":20000,"msg":"Redeemed"},"success":true,"time":"2026-08-07T22:05:40+05:30"}\n\n event: redeem-fin\ndata: {"redeemed":10,"manual":2,"playerDead":1,"codeExpired":3})
 // @Router /redeem/db [post]
-func RedeemWithDB(c *echo.Context) error {
-	reqContext := c.Request().Context()
-	res := c.Response()
+func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		reqContext := c.Request().Context()
+		res := c.Response()
 
-	// 1. Set required SSE headers
-	res.Header().Set("Content-Type", "text/event-stream")
-	res.Header().Set("Cache-Control", "no-cache")
-	res.Header().Set("Connection", "keep-alive")
-	res.Header().Set("X-Accel-Buffering", "no") // Prevents Nginx/reverse proxies from buffering the stream
+		// 1. Set required SSE headers
+		res.Header().Set("Content-Type", "text/event-stream")
+		res.Header().Set("Cache-Control", "no-cache")
+		res.Header().Set("Connection", "keep-alive")
+		res.Header().Set("X-Accel-Buffering", "no") // Prevents Nginx/reverse proxies from buffering the stream
 
-	// Ensure the underlying ResponseWriter supports HTTP flushing
-	flusher, ok := res.(http.Flusher)
-	if !ok {
-		slog.Error("Streaming unsupported: response writer does not implement http.Flusher")
-		return echo.NewHTTPError(http.StatusInternalServerError, "Streaming unsupported")
-	}
+		// Ensure the underlying ResponseWriter supports HTTP flushing
+		flusher, ok := res.(http.Flusher)
+		if !ok {
+			slog.Error("Streaming unsupported: response writer does not implement http.Flusher")
+			return echo.NewHTTPError(http.StatusInternalServerError, "Streaming unsupported")
+		}
 
-	giftCode := c.QueryParam("code")
-	if giftCode == "" {
-		return c.JSON(http.StatusBadGateway, map[string]string{"validation_error": "code query not found"})
-	}
-	dbApp := db.InitDB()
-	defer dbApp.Pool.Close()
+		giftCode := c.QueryParam("code")
+		if giftCode == "" {
+			return c.JSON(http.StatusBadGateway, map[string]string{"validation_error": "code query not found"})
+		}
 
-	ctx := context.Background()
-	players, err := dbApp.Queries.GetAllPlayers(ctx)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-	}
+		ctx := context.Background()
+		players, err := dbApp.Queries.GetAllPlayers(ctx)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
 	chunks := chunkArray(players, 5)
 	var playerMetaRedeemResponse model.PlayerMetaRedeemResponse
 	var finalRes []model.RedeemSSE
@@ -150,6 +149,7 @@ func RedeemWithDB(c *echo.Context) error {
 	fmt.Fprintf(res, "event: redeem-fin\ndata: %s\n\n", metaJsonData)
 	flusher.Flush()
 	return nil
+	}
 }
 
 func redeem(fid, kid int, code string) (model.RedeemResponse, error) {

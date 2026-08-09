@@ -7,19 +7,22 @@ import (
 
 type PlayerResponse struct {
 	Message string     `json:"message"`
-	Type    int        `json:"type"`
+	Type    uint       `json:"type"`
 	Player  PlayerInfo `json:"player"`
 }
 
 type PlayerAPIResponse struct {
 	Message string     `json:"message"`
-	Type    int        `json:"type"`
+	Type    uint       `json:"type"`
 	Player  PlayerInfo `json:"player"`
 }
-
+type AddPlayerValidator struct {
+	WrongField string `json:"wrong_field"`
+	Message    string `json:"message"`
+}
 type PlayerInfo struct {
-	Pid      int32  `json:"pid"`
-	Kid      int32  `json:"kid"`
+	Pid      uint   `json:"pid"`
+	Kid      uint   `json:"kid"`
 	Dname    string `json:"dName,omitempty"`
 	Pfp      string `json:"pfp,omitempty"`
 	Alliance string `json:"alliance,omitempty"`
@@ -34,8 +37,8 @@ type KSFetchPlayerResponse struct {
 type pData struct {
 	PlayerId              string `json:"playerId"`
 	Name                  string `json:"name"`
-	Kingdom               int    `json:"kingdom"`
-	Level                 int    `json:"level"`
+	Kingdom               uint   `json:"kingdom"`
+	Level                 uint   `json:"level"`
 	LevelRendered         string `json:"levelRendered"`
 	LevelRenderedDetailed string `json:"LevelRenderedDetailed"`
 	LevelImage            string `json:"levelImage"`
@@ -44,12 +47,13 @@ type pData struct {
 
 type PlayerReqBody struct {
 	Pid      string `json:"pid" validate:"required"`
-	Kid      int    `json:"kid" validate:"required,gte=1"`
-	Alliance string `json:"alliance" `
+	Kid      *uint  `json:"kid"`
+	Alliance string `json:"alliance"`
 }
 type DeletePlayerResponse struct {
 	Pid     string `json:"pid"`
 	Deleted bool   `json:"deleted"`
+	Message string `json:"message"`
 }
 type DeletePlayerErrorResponse struct {
 	Pid     string `json:"pid"`
@@ -63,10 +67,10 @@ type App struct {
 }
 
 type UpdatePlayerSSE struct {
-	Updated bool      `json:"updated"`
-	Player  db.Player `json:"player"`
+	Updated bool       `json:"updated"`
+	Player  PlayerInfo `json:"player"`
 }
 
 type UpdateMetaSSE struct {
-	Count int `json:"count"`
+	Count uint `json:"count"`
 }

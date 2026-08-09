@@ -6,26 +6,26 @@ FROM
 ORDER BY
     PiD;
 
--- name: DeletePlayer :exec
+-- name: DeletePlayer :execrows
 DELETE FROM Players
 WHERE
-    PiD = $1;
+    PiD = ?;
 
 -- name: PushPlayer :one
 INSERT INTO
     Players (PiD, KiD, dName, PFP, Alliance)
 VALUES
-    ($1, $2, $3, $4, $5)
+    (?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: UpdatePlayer :one
 UPDATE Players
 SET
-    KiD = $2,
-    dName = $3,
-    PFP = $4,
-    Alliance = $5
-WHERE PiD = $1
+    KiD = ?,
+    dName = ?,
+    PFP = ?,
+    Alliance = ?
+WHERE PiD = ?
 RETURNING *;
 
 
@@ -33,5 +33,5 @@ RETURNING *;
 INSERT INTO
     Giftcode (code)
 VALUES
-    ($1)
+    (?)
 RETURNING *;

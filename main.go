@@ -7,8 +7,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"log/slog"
 	"net/http"
 
@@ -41,10 +39,11 @@ func RateLimitMiddleware(limit rate.Limit, burst int) echo.MiddlewareFunc {
 		}
 	}
 }
+
 func main() {
 	e := echo.New()
 	ctx := context.Background()
-	// e.Use(RateLimitMiddleware(0.5, 5))
+
 	// Create trace exporter using environment variables
 	spanExporter, err := autoexport.NewSpanExporter(ctx)
 	if err != nil {
@@ -59,49 +58,32 @@ func main() {
 	e.Use(echootel.NewMiddlewareWithConfig(echootel.Config{
 		ServerName:     "my-server",
 		TracerProvider: tp,
-
-		//Skipper:             nil,
-		//OnNextError:         nil,
-		//OnExtractionError:   nil,
-		//MeterProvider:       nil,
-		//Propagators:         nil,
-		//SpanStartOptions:    nil,
-		//SpanStartAttributes: nil,
-		//SpanEndAttributes:   nil,
-		//MetricAttributes:    nil,
-		//Metrics:             nil,
 	}))
-	// Initialize DB from database.go
+
+	// Initialize DB once at startup
 	dbApp := db.InitDB()
 	defer dbApp.Pool.Close()
-
-	// Execute your queries
-	players, err := dbApp.Queries.GetAllPlayers(ctx)
-	if err != nil {
-		log.Fatalf("Failed to fetch players: %v", err)
-	}
-
-	fmt.Printf("Fetched %d players!\n", len(players))
 
 	// Middleware
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 
-	// Routes
+	// Routes - pass dbApp to handlers
 	e.GET("/", online_route.Hello)
 
 	// Player Routes
 	playerRouter := e.Group("/player")
-	playerRouter.POST("/add", player.AddPlayer)
-	playerRouter.DELETE("/del/:pid", player.DeletePlayer)
-	playerRouter.PATCH("/update", player.UpdateAllPlayer)
+	playerRouter.POST("/add", player.AddPlayer(dbApp))
+	playerRouter.DELETE("/del/:pid", player.DeletePlayer(dbApp))
+	playerRouter.PATCH("/update/all", player.UpdateAllPlayer(dbApp))
+	playerRouter.PATCH("/update/:pid", player.UpdatePlayer(dbApp))
 
 	redeemRouter := e.Group("/redeem")
-	redeemRouter.POST("/db", redeem.RedeemWithDB, RateLimitMiddleware(0.75, 5))
+	redeemRouter.POST("/db", redeem.RedeemWithDB(dbApp), RateLimitMiddleware(0.75, 5))
 	redeemRouter.GET("/ws", redeem.WSTest)
 
 	scraperRouter := e.Group("/scraper")
-	scraperRouter.GET("/player/:fid", scraper.StratForgePlayerScraperAPI)
+	scraperRouter.GET("/player/:fid", scraper.StratForgePlayerScraperAPI(dbApp))
 
 	// OpenAPI spec (generated via `swag init`) for GitBook import
 	e.GET("/api/openapi.json", func(c *echo.Context) error {

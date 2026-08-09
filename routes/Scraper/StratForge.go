@@ -7,6 +7,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 
+	"gitlab.com/ribonin/apis/kingshot-redeem/db"
 	"gitlab.com/ribonin/apis/kingshot-redeem/model"
 	"gitlab.com/ribonin/apis/kingshot-redeem/routes/Scraper/lib"
 )
@@ -24,24 +25,26 @@ import (
 // @Failure      502   {object}  map[string]string "Failed to fetch from stratforge.tools"
 // @Router       /scraper/stratforge/{fid} [get]
 
-func StratForgePlayerScraperAPI(c *echo.Context) error {
-	fid := c.Param("fid")
-	slog.Info("Fetch Started for fid -" + fid)
-	pidInt, _ := strconv.Atoi(fid)
+func StratForgePlayerScraperAPI(dbApp *db.App) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		fid := c.Param("fid")
+		slog.Info("Fetch Started for fid -" + fid)
+		pidInt, _ := strconv.Atoi(fid)
 
-	pInfo, errInfo, err := lib.StratForgePlayerScraper(fid)
-	if err != nil {
-		slog.Error("Error scraping player", "fid", fid, "err", err)
-		return c.JSON(http.StatusInternalServerError, model.CustomScrapePlayerErrInfo{
-			Pid:     pidInt,
-			Type:    1,
-			Message: "Player unable to be scraped / PlayerID is wrong",
-		})
-	}
+		pInfo, errInfo, err := lib.StratForgePlayerScraper(fid)
+		if err != nil {
+			slog.Error("Error scraping player", "fid", fid, "err", err)
+			return c.JSON(http.StatusInternalServerError, model.CustomScrapePlayerErrInfo{
+				Pid:     pidInt,
+				Type:    1,
+				Message: "Player unable to be scraped / PlayerID is wrong",
+			})
+		}
 
-	if errInfo != nil {
-		return c.JSON(http.StatusConflict, errInfo)
+		if errInfo != nil {
+			return c.JSON(http.StatusConflict, errInfo)
+		}
+		slog.Info("Player ", "Fetched", pInfo)
+		return c.JSON(http.StatusAccepted, pInfo)
 	}
-	slog.Info("Player ", "Fetched", pInfo)
-	return c.JSON(http.StatusAccepted, pInfo)
 }
