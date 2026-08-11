@@ -175,7 +175,7 @@ func tryAddWithStratForge(ctx context.Context, c *echo.Context, client *resty.Cl
 		slog.Error("Error in AddPlayer Route", "err", err)
 		c.Response().Header().Set("Content-Type", "application/json")
 		c.Response().Header().Set("Cache-Control", "no-store")
-		return true, c.JSON(http.StatusInternalServerError, map[string]string{"message": "Unable to add the player"})
+		return true, c.JSON(http.StatusInternalServerError, map[string]string{"message": "Unable to add the player", "error": err.Error()})
 	}
 
 	slog.Info("Player Added with PiD - " + body.Pid)

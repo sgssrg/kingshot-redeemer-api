@@ -7,9 +7,11 @@ package main
 
 import (
 	"context"
+	"log"
 	"log/slog"
 	"net/http"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"golang.org/x/time/rate"
@@ -19,6 +21,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
 	"gitlab.com/ribonin/apis/kingshot-redeem/db"
+
 	online_route "gitlab.com/ribonin/apis/kingshot-redeem/routes"
 	player "gitlab.com/ribonin/apis/kingshot-redeem/routes/Player"
 	redeem "gitlab.com/ribonin/apis/kingshot-redeem/routes/Redeem"
@@ -41,6 +44,10 @@ func RateLimitMiddleware(limit rate.Limit, burst int) echo.MiddlewareFunc {
 }
 
 func main() {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, relying on system env")
+	}
 	e := echo.New()
 	ctx := context.Background()
 
@@ -80,6 +87,7 @@ func main() {
 
 	redeemRouter := e.Group("/redeem")
 	redeemRouter.POST("/db", redeem.RedeemWithDB(dbApp), RateLimitMiddleware(0.75, 5))
+	redeemRouter.POST("/single", redeem.RedeemSingle(dbApp))
 	redeemRouter.GET("/ws", redeem.WSTest)
 
 	scraperRouter := e.Group("/scraper")

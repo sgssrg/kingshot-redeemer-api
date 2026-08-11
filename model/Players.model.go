@@ -50,6 +50,11 @@ type PlayerReqBody struct {
 	Kid      *uint  `json:"kid"`
 	Alliance string `json:"alliance"`
 }
+type GiftCodeReqBody struct {
+	Pid      string `json:"pid" validate:"required"`
+	Kid      *uint  `json:"kid"`
+	Giftcode string `json:"giftcode" validate:"required"`
+}
 type DeletePlayerResponse struct {
 	Pid     string `json:"pid"`
 	Deleted bool   `json:"deleted"`

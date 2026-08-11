@@ -8,11 +8,17 @@ type RedeemResponse struct {
 }
 
 type RedeemSSE struct {
-	Fid     string         `json:"fid"`
-	Code    string         `json:"code"`
-	Result  RedeemResponse `json:"result"`
-	Success bool           `json:"success"`
-	Time    string         `json:"time"`
+	Fid           string                `json:"fid"`
+	Code          string                `json:"code"`
+	RawResult     RedeemResponse        `json:"raw_result"`
+	RefinedResult RedeemRefinedResponse `json:"result"`
+	Success       bool                  `json:"success"`
+	Time          string                `json:"time"`
+}
+type RedeemRefinedResponse struct {
+	Message          string `json:"message"`
+	Redeemed         bool   `json:"redeemed"`
+	TypeRedeemedCode uint   `json:"type_redeem_code"`
 }
 
 type RedeemBodyKS struct {
@@ -25,7 +31,6 @@ type RedeemBodyKS struct {
 type PlayerMetaRedeemResponse struct {
 	Redeemed    int `json:"redeemed"`
 	Manual      int `json:"manual"`
-	UnkRetry    int `json:"unk_retry"`
 	CodeExpired int `json:"code_expired"`
 	PlayerDead  int `json:"PlayerDead"`
 }
