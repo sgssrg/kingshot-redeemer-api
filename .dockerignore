@@ -1,0 +1,10 @@
+.env
+/Mock
+/db/db.go
+/db/models.go
+/db/query.sql.go
+LICENSE
+
+.gitlab-ci.yml
+docker-compose.yml
+kingshot-redeem*

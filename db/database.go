@@ -39,7 +39,7 @@ func InitDB() *App {
 		log.Fatalf("Database ping failed: %v", err)
 	}
 
-	log.Println("⚡ Successfully connected to SQLite Cloud!")
+	log.Println("⚡ Successfully connected to Turso Cloud!")
 
 	return &App{
 		Queries: New(db),

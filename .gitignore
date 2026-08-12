@@ -3,3 +3,5 @@
 /db/db.go
 /db/models.go
 /db/query.sql.go
+
+kingshot-redeem*
