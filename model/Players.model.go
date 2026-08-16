@@ -17,8 +17,12 @@ type PlayerAPIResponse struct {
 	Player  PlayerInfo `json:"player"`
 }
 type AddPlayerValidator struct {
-	WrongField string `json:"wrong_field"`
-	Message    string `json:"message"`
+	WrongField string `json:"wrong_field" example:"pid"`
+	Message    string `json:"message" example:"Invalid PiD & It should be Interger > 0"`
+}
+type UpdatePlayerSSEValidator struct {
+	WrongField string `json:"wrong_field" example:"code"`
+	Message    string `json:"message" example:"Please enter a valid code."`
 }
 type PlayerInfo struct {
 	Pid      uint   `json:"pid"`

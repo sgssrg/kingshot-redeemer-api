@@ -6,10 +6,11 @@ FROM
 ORDER BY
     PiD;
 
--- name: DeletePlayer :execrows
+-- name: DeletePlayer :one
 DELETE FROM Players
-WHERE
-    PiD = ?;
+WHERE PiD = ?
+RETURNING *;
+
 
 -- name: PushPlayer :one
 INSERT INTO

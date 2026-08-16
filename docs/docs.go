@@ -104,13 +104,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "202": {
-                        "description": "Player deleted\" example({\"pid\":123,\"deleted\":true})",
+                        "description": "Player deleted",
+                        "schema": {
+                            "$ref": "#/definitions/model.DeletePlayerResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Player not found",
                         "schema": {
                             "$ref": "#/definitions/model.DeletePlayerResponse"
                         }
                     },
                     "500": {
-                        "description": "Delete failed\" example({\"pid\":123,\"deleted\":false,\"error\":\"database error\"})",
+                        "description": "Delete failed",
                         "schema": {
                             "$ref": "#/definitions/model.DeletePlayerErrorResponse"
                         }

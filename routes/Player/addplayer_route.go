@@ -50,7 +50,7 @@ func AddPlayer(dbApp *db.App) echo.HandlerFunc {
 		pidInt, err := strconv.Atoi(body.Pid)
 		if err != nil {
 			slog.Error("Invalid pid", "pid", body.Pid, "err", err)
-			return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid pid"})
+			return c.JSON(http.StatusBadRequest, model.AddPlayerValidator{WrongField: "pid", Message: "Invalid PiD & It should be Interger > 0"})
 		}
 
 		allianceParam := buildAllianceParam(body.Alliance)

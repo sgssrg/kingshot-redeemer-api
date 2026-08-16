@@ -51,7 +51,7 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 
 		giftCode := c.QueryParam("code")
 		if giftCode == "" {
-			return c.JSON(http.StatusBadGateway, map[string]string{"validation_error": "code query not found"})
+			return c.JSON(http.StatusBadRequest, model.UpdatePlayerSSEValidator{WrongField: "code", Message: "Please enter a valid code."})
 		}
 
 		chunks := chunkArray(players, 5)
@@ -91,8 +91,8 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 				}
 				slog.Info("resp", "data", resp)
 				finalRes = append(finalRes, redeemEvent)
-				if err == nil && resp.ErrCode == 0 && resp.Msg == "" || resp.Code == 40004 && resp.Msg == "TIMEOUT RETRY." {
-					slog.Warn("Received empty response, retrying in 5 seconds...", "fid", int(p.Pid))
+				if err == nil && resp.ErrCode == 0 && resp.Msg == "" || resp.Code == 40004 {
+					slog.Warn("Received empty response or TIMEOUT_RETRY, retrying in 5 seconds...", "fid", int(p.Pid))
 					sleep(5)
 					resp, err = Redeem(int(p.Pid), 1420, giftCode)
 				}
