@@ -62,6 +62,7 @@ type GiftCodeReqBody struct {
 type DeletePlayerResponse struct {
 	Pid     string `json:"pid"`
 	Deleted bool   `json:"deleted"`
+	Player PlayerInfo `json:"player_info"`
 	Message string `json:"message"`
 }
 type DeletePlayerErrorResponse struct {

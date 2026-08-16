@@ -17,6 +17,8 @@ definitions:
         type: string
       pid:
         type: string
+      player_info:
+        $ref: '#/definitions/model.PlayerInfo'
     type: object
   model.PlayerAPIResponse:
     properties:

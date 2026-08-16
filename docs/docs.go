@@ -223,6 +223,9 @@ const docTemplate = `{
                 },
                 "pid": {
                     "type": "string"
+                },
+                "player_info": {
+                    "$ref": "#/definitions/model.PlayerInfo"
                 }
             }
         },
