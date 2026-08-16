@@ -104,21 +104,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "202": {
-                        "description": "Player deleted",
+                        "description": "Player Delete",
                         "schema": {
-                            "$ref": "#/definitions/model.DeletePlayerResponse"
+                            "$ref": "#/definitions/model.DeletePlayerResponseSuccess"
                         }
                     },
-                    "404": {
-                        "description": "Player not found",
+                    "400": {
+                        "description": "Invalid PiD",
                         "schema": {
-                            "$ref": "#/definitions/model.DeletePlayerResponse"
+                            "$ref": "#/definitions/model.DeletePlayerValidationError"
                         }
                     },
                     "500": {
-                        "description": "Delete failed",
+                        "description": "Delete Failed",
                         "schema": {
-                            "$ref": "#/definitions/model.DeletePlayerErrorResponse"
+                            "$ref": "#/definitions/model.DeletePlayerResponseFailure"
                         }
                     }
                 }
@@ -198,34 +198,59 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.DeletePlayerErrorResponse": {
+        "model.DeletePlayerResponseFailure": {
             "type": "object",
             "properties": {
                 "deleted": {
-                    "type": "boolean"
-                },
-                "error": {
-                    "type": "string"
-                },
-                "pid": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.DeletePlayerResponse": {
-            "type": "object",
-            "properties": {
-                "deleted": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "message": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Player not found"
                 },
                 "pid": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "123"
                 },
                 "player_info": {
                     "$ref": "#/definitions/model.PlayerInfo"
+                }
+            }
+        },
+        "model.DeletePlayerResponseSuccess": {
+            "type": "object",
+            "properties": {
+                "deleted": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Player deleted successfully"
+                },
+                "pid": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "player_info": {
+                    "$ref": "#/definitions/model.PlayerInfo"
+                }
+            }
+        },
+        "model.DeletePlayerValidationError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "invalid player ID"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "wrong_field": {
+                    "type": "string",
+                    "example": "pid"
                 }
             }
         },
@@ -247,19 +272,24 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "alliance": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "XYZ"
                 },
                 "dName": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "MeowMeow"
                 },
                 "kid": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 123
                 },
                 "pfp": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "\u003c-pfp-url-\u003e"
                 },
                 "pid": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 123456
                 }
             }
         },

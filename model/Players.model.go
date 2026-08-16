@@ -24,14 +24,31 @@ type UpdatePlayerSSEValidator struct {
 	WrongField string `json:"wrong_field" example:"code"`
 	Message    string `json:"message" example:"Please enter a valid code."`
 }
-type PlayerInfo struct {
-	Pid      uint   `json:"pid"`
-	Kid      uint   `json:"kid"`
-	Dname    string `json:"dName,omitempty"`
-	Pfp      string `json:"pfp,omitempty"`
-	Alliance string `json:"alliance,omitempty"`
+type DeletePlayerValidationError struct {
+	WrongField string `json:"wrong_field" example:"pid"`
+	Message    string `json:"message" example:"invalid player ID"`
+	Value      string `json:"value"`
 }
 
+type PlayerInfo struct {
+	Pid      uint   `json:"pid" example:"123456"`
+	Kid      uint   `json:"kid" example:"123"`
+	Dname    string `json:"dName,omitempty" example:"MeowMeow"`
+	Pfp      string `json:"pfp,omitempty" example:"<-pfp-url->"`
+	Alliance string `json:"alliance,omitempty" example:"XYZ"`
+}
+type DeletePlayerResponseSuccess struct {
+	Pid     string     `json:"pid" example:"123"`
+	Deleted bool       `json:"deleted" example:"true"`
+	Player  PlayerInfo `json:"player_info"`
+	Message string     `json:"message" example:"Player deleted successfully"`
+}
+type DeletePlayerResponseFailure struct {
+	Pid     string     `json:"pid" example:"123"`
+	Deleted bool       `json:"deleted" example:"false"`
+	Player  PlayerInfo `json:"player_info,omitempty"`
+	Message string     `json:"message" example:"Player not found"`
+}
 type KSFetchPlayerResponse struct {
 	Status    string `json:"status"`
 	Data      pData  `json:"data"`
@@ -59,12 +76,7 @@ type GiftCodeReqBody struct {
 	Kid      *uint  `json:"kid"`
 	Giftcode string `json:"giftcode" validate:"required"`
 }
-type DeletePlayerResponse struct {
-	Pid     string `json:"pid"`
-	Deleted bool   `json:"deleted"`
-	Player PlayerInfo `json:"player_info"`
-	Message string `json:"message"`
-}
+
 type DeletePlayerErrorResponse struct {
 	Pid     string `json:"pid"`
 	Deleted bool   `json:"deleted"`

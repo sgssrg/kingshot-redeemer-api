@@ -1,24 +1,43 @@
 basePath: /
 definitions:
-  model.DeletePlayerErrorResponse:
+  model.DeletePlayerResponseFailure:
     properties:
       deleted:
-        type: boolean
-      error:
-        type: string
-      pid:
-        type: string
-    type: object
-  model.DeletePlayerResponse:
-    properties:
-      deleted:
+        example: false
         type: boolean
       message:
+        example: Player not found
         type: string
       pid:
+        example: "123"
         type: string
       player_info:
         $ref: '#/definitions/model.PlayerInfo'
+    type: object
+  model.DeletePlayerResponseSuccess:
+    properties:
+      deleted:
+        example: true
+        type: boolean
+      message:
+        example: Player deleted successfully
+        type: string
+      pid:
+        example: "123"
+        type: string
+      player_info:
+        $ref: '#/definitions/model.PlayerInfo'
+    type: object
+  model.DeletePlayerValidationError:
+    properties:
+      message:
+        example: invalid player ID
+        type: string
+      value:
+        type: string
+      wrong_field:
+        example: pid
+        type: string
     type: object
   model.PlayerAPIResponse:
     properties:
@@ -32,14 +51,19 @@ definitions:
   model.PlayerInfo:
     properties:
       alliance:
+        example: XYZ
         type: string
       dName:
+        example: MeowMeow
         type: string
       kid:
+        example: 123
         type: integer
       pfp:
+        example: <-pfp-url->
         type: string
       pid:
+        example: 123456
         type: integer
     type: object
   model.PlayerReqBody:
@@ -128,17 +152,17 @@ paths:
       - application/json
       responses:
         "202":
-          description: Player deleted
+          description: Player Delete
           schema:
-            $ref: '#/definitions/model.DeletePlayerResponse'
-        "404":
-          description: Player not found
+            $ref: '#/definitions/model.DeletePlayerResponseSuccess'
+        "400":
+          description: Invalid PiD
           schema:
-            $ref: '#/definitions/model.DeletePlayerResponse'
+            $ref: '#/definitions/model.DeletePlayerValidationError'
         "500":
-          description: Delete failed
+          description: Delete Failed
           schema:
-            $ref: '#/definitions/model.DeletePlayerErrorResponse'
+            $ref: '#/definitions/model.DeletePlayerResponseFailure'
       summary: Delete a player
       tags:
       - Player
