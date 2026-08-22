@@ -91,7 +91,7 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 				}
 				slog.Info("resp", "data", resp)
 				finalRes = append(finalRes, redeemEvent)
-				if err == nil && resp.ErrCode == 0 && resp.Msg == "" || resp.Code == 40004 {
+				if err == nil && resp.ErrCode == 0 && resp.Msg == "" || resp.ErrCode == 40004 {
 					slog.Warn("Received empty response or TIMEOUT_RETRY, retrying in 5 seconds...", "fid", int(p.Pid))
 					sleep(5)
 					resp, err = Redeem(int(p.Pid), 1420, giftCode)
@@ -100,22 +100,26 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 				case 20000:
 					redeemEvent.RefinedResult.Message = "Redeemed By Bot 💝"
 					redeemEvent.RefinedResult.Redeemed = true
+					redeemEvent.RefinedResult.RedeemedByBot = true
 					redeemEvent.RefinedResult.TypeRedeemedCode = 0
 					playerMetaRedeemResponse.Redeemed++
 				case 40008:
 					redeemEvent.RefinedResult.Message = "Manual ❤️‍🩹"
 					redeemEvent.RefinedResult.Redeemed = true
-					redeemEvent.RefinedResult.TypeRedeemedCode = 1
+					redeemEvent.RefinedResult.RedeemedByBot = false
+					redeemEvent.RefinedResult.TypeRedeemedCode = 2
 					playerMetaRedeemResponse.Manual++
 				case 40020:
 					redeemEvent.RefinedResult.Message = "Dead PlayerID 🛠️"
 					redeemEvent.RefinedResult.Redeemed = false
+					redeemEvent.RefinedResult.RedeemedByBot = false
 					redeemEvent.RefinedResult.TypeRedeemedCode = 3
 					playerMetaRedeemResponse.PlayerDead++
 				case 40005, 40007, 40014:
 					redeemEvent.RefinedResult.Message = "Expired/Dead GiftCode 🗑️"
 					redeemEvent.RefinedResult.Redeemed = false
-					redeemEvent.RefinedResult.TypeRedeemedCode = 3
+					redeemEvent.RefinedResult.RedeemedByBot = false
+					redeemEvent.RefinedResult.TypeRedeemedCode = 4
 					playerMetaRedeemResponse.CodeExpired++
 				}
 

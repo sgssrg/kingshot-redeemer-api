@@ -18,6 +18,7 @@ type RedeemSSE struct {
 type RedeemRefinedResponse struct {
 	Message          string `json:"message"`
 	Redeemed         bool   `json:"redeemed"`
+	RedeemedByBot    bool   `json:"redeemed_by_bot"`
 	TypeRedeemedCode uint   `json:"type_redeem_code"`
 }
 
@@ -34,5 +35,3 @@ type PlayerMetaRedeemResponse struct {
 	CodeExpired int `json:"code_expired"`
 	PlayerDead  int `json:"PlayerDead"`
 }
-
-

@@ -52,19 +52,28 @@ func RedeemSingle(dbApp *db.App) echo.HandlerFunc {
 		case 20000:
 			redeemEvent.RefinedResult.Message = "Redeemed By Bot 💝"
 			redeemEvent.RefinedResult.Redeemed = true
+			redeemEvent.RefinedResult.RedeemedByBot = true
 			redeemEvent.RefinedResult.TypeRedeemedCode = 0
+		case 40004:
+			redeemEvent.RefinedResult.Message = "Timeout Retry 🧱"
+			redeemEvent.RefinedResult.Redeemed = false
+			redeemEvent.RefinedResult.RedeemedByBot = false
+			redeemEvent.RefinedResult.TypeRedeemedCode = 1
 		case 40008:
 			redeemEvent.RefinedResult.Message = "Manual ❤️‍🩹"
 			redeemEvent.RefinedResult.Redeemed = true
-			redeemEvent.RefinedResult.TypeRedeemedCode = 1
+			redeemEvent.RefinedResult.RedeemedByBot = false
+			redeemEvent.RefinedResult.TypeRedeemedCode = 2
 		case 40020:
 			redeemEvent.RefinedResult.Message = "Dead PlayerID 🛠️"
 			redeemEvent.RefinedResult.Redeemed = false
+			redeemEvent.RefinedResult.RedeemedByBot = false
 			redeemEvent.RefinedResult.TypeRedeemedCode = 3
 		case 40005, 40007, 40014:
 			redeemEvent.RefinedResult.Message = "Expired/Dead GiftCode 🗑️"
 			redeemEvent.RefinedResult.Redeemed = false
-			redeemEvent.RefinedResult.TypeRedeemedCode = 3
+			redeemEvent.RefinedResult.RedeemedByBot = false
+			redeemEvent.RefinedResult.TypeRedeemedCode = 4
 		}
 		c.JSON(http.StatusAccepted, redeemEvent)
 		return nil
