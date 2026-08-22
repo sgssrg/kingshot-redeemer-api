@@ -38,11 +38,16 @@ func StratForgePlayerScraper(fid string) (*model.ScrapePlayerInfo, *model.Custom
 	})
 
 	// Kingdom ID
-	cly.OnHTML("a.text-forge.transition-colors.hover\\:underline", func(e *colly.HTMLElement) {
-		re := regexp.MustCompile(`\d+`)
-		if match := re.FindString(e.Text); match != "" {
-			if kid, err := strconv.Atoi(match); err == nil {
+	cly.OnHTML("a.text-forge-text", func(e *colly.HTMLElement) {
+		href := e.Attr("href") // "/k/1406"
+		slog.Info("Anchor href", "href", href)
+
+		// simplest way: strip prefix
+		if strings.HasPrefix(href, "/k/") {
+			kidStr := strings.TrimPrefix(href, "/k/")
+			if kid, err := strconv.Atoi(kidStr); err == nil {
 				pInfo.Kid = kid
+				slog.Info("Kid found", "value", kid)
 			}
 		}
 	})
