@@ -91,7 +91,7 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 				}
 				slog.Info("resp", "data", resp)
 				finalRes = append(finalRes, redeemEvent)
-				if err == nil && resp.ErrCode == 0 && resp.Msg == "" || resp.ErrCode == 40004 {
+				if err == nil && (resp.ErrCode == 0 && resp.Msg == "") || resp.ErrCode == 40004 {
 					slog.Warn("Received empty response or TIMEOUT_RETRY, retrying in 5 seconds...", "fid", int(p.Pid))
 					sleep(5)
 					resp, err = Redeem(int(p.Pid), 1420, giftCode)
