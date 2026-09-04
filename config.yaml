@@ -1,0 +1,34 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+exporters:
+  otlp_http/openobserve:
+    endpoint: http://localhost:5080/api/default
+    headers:
+      Authorization: Basic cm9vdEBleGFtcGxlLmNvbTpvMm9pX040OFB0OHlCdGl1Y2gyOXlxb1d1RUFwM082NDNQMzd0
+      stream-name: default
+
+processors:
+  batch:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/openobserve]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/openobserve]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/openobserve]
+
+  telemetry:
+    logs:
+      level: warn

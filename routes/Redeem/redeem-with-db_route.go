@@ -115,7 +115,7 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 					redeemEvent.RefinedResult.RedeemedByBot = false
 					redeemEvent.RefinedResult.TypeRedeemedCode = 3
 					playerMetaRedeemResponse.PlayerDead++
-				case 40005, 40007, 40014:
+				case 40005, 40007, 40014, 0:
 					redeemEvent.RefinedResult.Message = "Expired/Dead GiftCode 🗑️"
 					redeemEvent.RefinedResult.Redeemed = false
 					redeemEvent.RefinedResult.RedeemedByBot = false
