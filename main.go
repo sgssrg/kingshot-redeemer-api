@@ -153,7 +153,6 @@ func main() {
 	redeemRouter := e.Group("/redeem")
 	redeemRouter.POST("/db", redeem.RedeemWithDB(dbApp), RateLimitMiddleware(0.75, 5))
 	redeemRouter.POST("/single", redeem.RedeemSingle(dbApp))
-	redeemRouter.GET("/ws", redeem.WSTest)
 
 	scraperRouter := e.Group("/scraper")
 	scraperRouter.GET("/player/:fid", scraper.StratForgePlayerScraperAPI(dbApp))
