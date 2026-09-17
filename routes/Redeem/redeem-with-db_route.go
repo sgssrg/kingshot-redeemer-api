@@ -29,13 +29,16 @@ const (
 // @Router /redeem/db [post]
 func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 	return func(c *echo.Context) error {
+
 		reqContext := c.Request().Context()
 		res := c.Response()
 		ctx := context.Background()
 		players, err := dbApp.Queries.GetAllPlayers(ctx)
+
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
+
 		// 1. Set required SSE headers
 		res.Header().Set("Content-Type", "text/event-stream")
 		res.Header().Set("Cache-Control", "no-cache")
@@ -52,6 +55,13 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 		giftCode := c.QueryParam("code")
 		if giftCode == "" {
 			return c.JSON(http.StatusBadRequest, model.UpdatePlayerSSEValidator{WrongField: "code", Message: "Please enter a valid code."})
+		}
+
+		// Checking if we have already Redeemed it or not
+		giftCodeInDb, _ := dbApp.Queries.GetGC(ctx, giftCode)
+
+		if giftCodeInDb.Code == giftCode {
+			return c.JSON(http.StatusConflict, model.RedeemValidator{WrongField: "code", Message: "Already Redeemed."})
 		}
 
 		chunks := chunkArray(players, 5)
@@ -91,7 +101,7 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 				}
 				slog.Info("resp", "data", resp)
 				finalRes = append(finalRes, redeemEvent)
-				if err == nil && (resp.ErrCode == 0 && resp.Msg == "") || resp.ErrCode == 40004 {
+				if err == nil && (resp.ErrCode == 0 && resp.Msg == "") || resp.ErrCode == 40004 || resp.ErrCode == 40007 {
 					slog.Warn("Received empty response or TIMEOUT_RETRY, retrying in 5 seconds...", "fid", int(p.Pid))
 					sleep(5)
 					resp, err = Redeem(int(p.Pid), 1420, giftCode)
@@ -153,6 +163,7 @@ func RedeemWithDB(dbApp *db.App) echo.HandlerFunc {
 		}
 
 		// FIX 2: Fixed duplicate "data: data:" -> "data: %s\n\n"
+		dbApp.Queries.PushGC(ctx, giftCode)
 		fmt.Fprintf(res, "event: redeem-fin\ndata: %s\n\n", metaJsonData)
 		flusher.Flush()
 		return nil
