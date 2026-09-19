@@ -25,11 +25,13 @@ import (
 	"gitlab.com/ribonin/apis/kingshot-redeem/db"
 
 	online_route "gitlab.com/ribonin/apis/kingshot-redeem/routes"
+	alliance "gitlab.com/ribonin/apis/kingshot-redeem/routes/Alliance"
 	player "gitlab.com/ribonin/apis/kingshot-redeem/routes/Player"
 	redeem "gitlab.com/ribonin/apis/kingshot-redeem/routes/Redeem"
 	scraper "gitlab.com/ribonin/apis/kingshot-redeem/routes/Scraper"
 )
 
+// TODO: Better Middleware
 func RateLimitMiddleware(limit rate.Limit, burst int) echo.MiddlewareFunc {
 	limiter := rate.NewLimiter(limit, burst)
 
@@ -156,6 +158,9 @@ func main() {
 
 	scraperRouter := e.Group("/scraper")
 	scraperRouter.GET("/player/:fid", scraper.StratForgePlayerScraperAPI(dbApp))
+
+	allianceRouter := e.Group("/alliance")
+	allianceRouter.GET("/unique-from-db", alliance.GetAllUniqueAllianceFromDB(dbApp), RateLimitMiddleware())
 
 	e.GET("/api/openapi.json", func(c *echo.Context) error {
 		return c.File("docs/swagger.json")

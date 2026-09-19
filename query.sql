@@ -42,3 +42,9 @@ SELECT code, claimedAt
 FROM Giftcode
 WHERE code=?
 LIMIT 1;
+
+-- name: GetAllUniqueAlliance :many
+SELECT DISTINCT Alliance 
+FROM Players 
+WHERE Alliance IS NOT NULL
+AND Alliance != '';
