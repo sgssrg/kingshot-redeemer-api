@@ -160,7 +160,7 @@ func main() {
 	scraperRouter.GET("/player/:fid", scraper.StratForgePlayerScraperAPI(dbApp))
 
 	allianceRouter := e.Group("/alliance")
-	allianceRouter.GET("/unique-from-db", alliance.GetAllUniqueAllianceFromDB(dbApp), RateLimitMiddleware())
+	allianceRouter.GET("/unique-from-db", alliance.GetAllUniqueAllianceFromDB(dbApp))
 
 	e.GET("/api/openapi.json", func(c *echo.Context) error {
 		return c.File("docs/swagger.json")
