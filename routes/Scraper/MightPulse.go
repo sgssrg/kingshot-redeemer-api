@@ -2,6 +2,7 @@ package scraper
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v5"
 	"gitlab.com/ribonin/apis/kingshot-redeem/model"
@@ -48,12 +49,19 @@ func buildIndexByID(players *[]model.MPMemberScrape) map[int]model.MPMemberScrap
 
 func transformMembers(src model.MightPulseScrapeAlliance) []model.PlayerInfo {
 	out := make([]model.PlayerInfo, 0, len(src.Members))
+
 	for _, m := range src.Members {
+		pfp := m.AvatarURL
+		// Formating Image URL
+		if strings.HasPrefix(pfp, "/assets") {
+			pfp = "https://mightpulse.com" + m.AvatarURL
+			// TODO: Fetch this from StratForge Scraper
+		}
 		out = append(out, model.PlayerInfo{
 			Pid:      uint(m.UID),
 			Kid:      uint(m.Kid),
 			Dname:    m.NickName,
-			Pfp:      m.AvatarURL,
+			Pfp:      pfp,
 			Alliance: m.AllianceAbbr,
 		})
 	}
