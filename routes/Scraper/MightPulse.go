@@ -54,7 +54,7 @@ func transformMembers(src model.MightPulseScrapeAlliance) []model.PlayerInfo {
 			Kid:      uint(m.Kid),
 			Dname:    m.NickName,
 			Pfp:      m.AvatarURL,
-			Alliance: m.AllianceName,
+			Alliance: m.AllianceAbbr,
 		})
 	}
 	return out
