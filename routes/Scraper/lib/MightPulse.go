@@ -9,8 +9,11 @@ func MPAlliancePlayerScaper(KSKid *string, KSAlliance *string) (*model.MightPuls
 	client := resty.New()
 
 	mpURL := "https://mightpulse.com/api/alliances/lookup?kid=" + *KSKid + "&slug=" + *KSAlliance
-	var aD model.MightPulseScrapeAlliance    
-	aF, err := client.R().SetResult(aD).SetRetryCount(3).SetHeader("Content-Type", "application/json").Get(mpURL)
-
-	return &aD, aF.StatusCode(), err
+	var aD model.MightPulseScrapeAlliance
+	aF, err := client.R().SetResult(&aD).SetRetryCount(3).SetHeader("Content-Type", "application/json").Get(mpURL)
+	statusCode := 0
+	if aF != nil {
+		statusCode = aF.StatusCode()
+	}
+	return &aD, statusCode, err
 }

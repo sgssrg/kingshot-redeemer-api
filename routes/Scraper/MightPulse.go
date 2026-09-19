@@ -21,10 +21,10 @@ func MPAlliancePlayerScaperRouter() echo.HandlerFunc {
 
 		aD, RespCode, err := lib.MPAlliancePlayerScaper(&kid, &alliance)
 		if RespCode == 404 {
-			c.JSON(http.StatusBadRequest, model.MPScrapeAllianceResp{ErrorState: true, Message: "Alliance Doesn't Exist in MightPulse"})
+			return c.JSON(http.StatusBadRequest, model.MPScrapeAllianceResp{ErrorState: true, Message: "Alliance Doesn't Exist in MightPulse"})
 		}
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, model.MPScrapeAllianceResp{ErrorState: true, Message: "Unable to that Alliance"})
+			return c.JSON(http.StatusInternalServerError, model.MPScrapeAllianceResp{ErrorState: true, Message: "Unable to that Alliance"})
 		}
 		// Finding alliance Leader's info
 		pI := buildIndexByID(&aD.Members)
