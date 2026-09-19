@@ -16,15 +16,15 @@ import (
 
 func RedeemSingle(dbApp *db.App) echo.HandlerFunc {
 	return func(c *echo.Context) error {
-
+		
 		client := resty.New()
 		defer client.Close()
-
+		
 		body, err := bindAndValidatePlayer(c)
 		if err != nil {
 			return err
 		}
-
+		
 		pidInt, err := strconv.Atoi(body.Pid)
 		if err != nil {
 			slog.Error("Invalid pid", "pid", body.Pid, "err", err)
