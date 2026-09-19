@@ -35,3 +35,8 @@ type PlayerMetaRedeemResponse struct {
 	CodeExpired int `json:"code_expired"`
 	PlayerDead  int `json:"PlayerDead"`
 }
+
+type RedeemValidator struct {
+	WrongField string `json:"wrong_field" example:"code"`
+	Message    string `json:"message" example:"Already Redeemed."`
+}

@@ -36,3 +36,9 @@ INSERT INTO
 VALUES
     (?)
 RETURNING *;
+
+-- name: GetGC :one
+SELECT code, claimedAt 
+FROM Giftcode
+WHERE code=?
+LIMIT 1;
