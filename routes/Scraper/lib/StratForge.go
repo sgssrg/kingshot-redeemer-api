@@ -10,11 +10,11 @@ import (
 	"gitlab.com/ribonin/apis/kingshot-redeem/model"
 )
 
-func StratForgePlayerScraper(fid string) (*model.ScrapePlayerInfo, *model.CustomScrapePlayerErrInfo, error) {
-	slog.Info("Fetch Started for fid -" + fid)
-	link := "https://stratforge.tools/p/" + fid
+func StratForgePlayerScraper(fid *string) (*model.ScrapePlayerInfo, *model.CustomScrapePlayerErrInfo, error) {
+	slog.Info("Fetch Started for fid -" + *fid)
+	link := "https://stratforge.tools/p/" + *fid
 	var pInfo model.ScrapePlayerInfo
-	pid, _ := strconv.Atoi(fid)
+	pid, _ := strconv.Atoi(*fid)
 	pInfo.Pid = pid
 
 	var errInfo *model.CustomScrapePlayerErrInfo // pointer, starts nil

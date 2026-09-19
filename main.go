@@ -157,7 +157,8 @@ func main() {
 	redeemRouter.POST("/single", redeem.RedeemSingle(dbApp))
 
 	scraperRouter := e.Group("/scraper")
-	scraperRouter.GET("/player/:fid", scraper.StratForgePlayerScraperAPI(dbApp))
+	scraperRouter.GET("/player/:fid", scraper.StratForgePlayerScraperAPI())
+	scraperRouter.GET("/alliance", scraper.MPAlliancePlayerScaperRouter())
 
 	allianceRouter := e.Group("/alliance")
 	allianceRouter.GET("/unique-from-db", alliance.GetAllUniqueAllianceFromDB(dbApp))
